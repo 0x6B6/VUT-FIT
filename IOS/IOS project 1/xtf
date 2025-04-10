@@ -1,0 +1,285 @@
+#!/bin/dash
+POSIXLY_CORRECT=yes
+
+#Author: Marek Pazúr
+#Login: xpazurm00
+#Date: 02.03.2024
+
+#################################################
+#			Globalni promenne skriptu
+#################################################
+#	Promena slouzici pro umele navyseni zisku (krypto)men, implicitne 20, muze byt ale nastavena v danem subshellu
+XTF_PROFIT=${XTF_PROFIT:-20}
+#	Navratove hodnoty skriptu, pri uspesnem ukonceni exit_success, jinak exit_failure s chybovym hlasenim na stderr
+exit_sucess=0
+exit_failure=1
+#	Prepinace pro nastaveni filtru, hodnoty (0 | 1)
+a_switch=0
+b_switch=0
+c_switch=0
+#	Promenne pro filtr (crypto_change=mena, date_after=datum po, date_before=datum pred)
+crypto_change=
+date_after=
+date_before=
+#	Uzivatelska data (username=jmeno uzivatele, command=zadany prikaz)
+username=
+command=
+
+#################################################
+#					Funkce
+#################################################
+#	help - vypise napovedu
+help() {
+	echo "Name: xtf - script for preprocessing logs from your cryptocurrency exchange"
+
+	echo "Usage: xtf [-h|--help] [FILTER] [COMMAND] USER LOG [LOG2 [...]"
+
+	echo "Options:"
+
+	echo "	COMMAND:"
+	echo "		list - writes out the logs for the given user"
+	echo "		list-currency - writes out the sorted list of given users currency"
+	echo "		status - statement of the actual status of the grouped and sorted account according to individual currencies"
+	echo "		profit - statement of the customer's account balance with a calculated fictitious return"
+
+	echo "	FILTER:"
+	echo "		-a DATETIME - after: only records AFTER this date and time (date not included) are considered"
+	echo "		-b DATETIME - before: only records BEFORE this date and time (date not included) are considered"
+	echo "		-c CURRENCY - only records corresponding to the given currency are considered"
+
+	echo "	-h and --help will print out help with a short description of each command and switch"
+}
+#	list - vypise zaznamy pro daneho uzivatele
+list() { 
+	logs=$(echo "$1" | grep -E "^$username\;")
+	if [ -n "$logs" ]; then
+	echo "$logs"
+	fi
+}
+#	listcurrency - vypise serazeny seznam vyskytujicich se men 
+listcurrency() { 
+	logs=$(echo "$1" | grep -E "^$username\;")
+	if [ -n "$logs" ]; then
+	echo "$logs" | awk -F';' '{print $3}' | sort -u
+	fi
+}
+#	status - vypise skutecny stav uctu seskupeneho a serazeneho dle jednotlivych men
+status() { 
+	logs=$(echo "$1" | grep -E "^$username\;")
+	
+	#V pripade, ze existuji zaznamy po zpracovani filtrem
+	if [ -n "$logs" ]; then
+		currency_list=$(echo "$logs" | awk -F';' '{print $3}' | sort -u)
+		
+		for currency in $currency_list; do
+			printf "%s" "$currency : "
+
+			transaction=$(echo "$logs" | grep -E "$currency" | awk -F';' '{print $4}')
+			
+			sum="0"
+
+			for value in $transaction; do
+				sum=$(echo "scale=10; $sum + $value" | bc)
+			done
+
+				printf "%.4f\n" "$sum"
+		done
+	fi
+}
+#	profit - vypise stav uctu zakaznika se zapocitanym fiktivnim vynosem
+profit() { 
+	logs=$(echo "$1" | grep -E "^$username\;")
+
+	#Hodnota promenne XTF_PROFIT bude vzdy pouze nezaporne cele cislo
+	if [ "$XTF_PROFIT" -lt 0 ]; then
+		echo "Invalid value: 'XTF_PROFIT=$XTF_PROFIT' must be set to unsigned integer" 1>&2
+		exit $exit_failure
+	fi
+
+	if [ -n "$logs" ]; then
+		currency_list=$(echo "$logs" | awk -F';' '{print $3}' | sort -u)
+		
+		for currency in $currency_list; do
+			printf "%s" "$currency : "
+
+			transaction=$(echo "$logs" | grep -E "$currency" | awk -F';' '{print $4}')
+			
+			sum="0"
+
+			for value in $transaction; do
+				sum=$(echo "scale=10; $sum + $value" | bc)
+			done
+
+			#Navyseni KLADNYCH zustatku men o * $XTF_PROFIT/100
+			if [ "$(echo "$sum > 0" | bc)" -eq 1 ]; then
+				sum=$(echo "scale=10; $sum + $sum *  $XTF_PROFIT/100" | bc)
+			fi
+
+				printf "%.4f\n" "$sum"
+		done
+	fi
+}
+#	Kontrola datumu
+checkDate() {
+	this_date=$1
+
+	#V pripade nekorektniho formatu datumu program date vraci nenulvou hodnotu a vypise chybove hlaseni na stderr
+	date -d "$this_date" +"%Y-%m-%d %H:%M:%S" >/dev/null
+	#Zachyceni navratove hodnoty
+	date_format=$?
+	
+	if [ $date_format -ne 0 ]; then
+		exit $exit_failure
+	fi
+}
+#	Filtr
+filter() { 
+	#Promena, nejdrive inicializovana obsahem souboru (vstupni parametr funkce), pote je obsah postupne filtrovan
+	filtered=$1
+
+	#Ulozeni zaznamu PO tomto datu (date_after)
+	if [ $a_switch -eq 1 ]; then
+		filtered=$(echo "$filtered"| awk -F';' -v date_after="$date_after" '$2 > date_after {print}')
+	fi
+
+	#Ulozeni zaznamu PRED timto datem (date_before)
+	if [ $b_switch  -eq 1 ]; then
+		filtered=$(echo "$filtered"| awk -F';' -v date_before="$date_before" '$2 < date_before {print}')
+	fi
+
+	#Ulozeni zaznamu odpovidajici dane mene
+	if [ $c_switch  -eq 1 ]; then
+		filtered=$(echo "$filtered"| grep -E "$crypto_change")
+	fi		
+
+	#Vypis filtrovaneho(zpracovaneho) obsahu daneho souboru
+	echo "$filtered"
+}
+
+#################################################
+#				Zpracovani vstupu				
+#################################################
+#	Zpracovani prepinacu
+while getopts "h-a:b:c:" opt; do
+	#statements
+	case $opt in
+		h )
+			help
+			exit $exit_sucess;
+			;;
+		- )
+			help
+			exit $exit_sucess;
+			;;
+		a)
+			a_switch=1
+			date_after=$OPTARG
+			checkDate "$date_after"
+			;;
+		b)
+			b_switch=1
+			date_before=$OPTARG
+			checkDate "$date_before"
+			;;
+		c)	
+			c_switch=1
+			crypto_change=$OPTARG
+			;;
+		*)
+			exit $exit_failure
+			;;		
+	esac
+done
+
+#	Posunuti na zbyvajici argumenty (o OPTIND, muze byt 0, proto -1) po provedeni getopts
+shift $((OPTIND -1))
+
+#	Osetreni pripadu, ze neni zadano uzivatelske jmeno a alespon jeden zaznam (prikaz nemusi byt zadan - implicitne command=list)
+if [ $# -lt 2 ]; then
+	echo "Too few arguments" 1>&2
+	exit $exit_failure
+fi
+
+#	Zachyceni prikazu a uzivatelskeho jmena
+next_arg=$1
+case $next_arg in
+	"list" )
+		command=$next_arg
+		shift
+		username=$1
+		;;
+	"list-currency")
+		command=$next_arg
+		shift
+		username=$1
+		;;
+	"status")
+		command=$next_arg
+		shift
+		username=$1
+		;;
+	"profit")
+		command=$next_arg
+		shift
+		username=$1
+		;;
+	*)
+		username=$next_arg
+		command="list"
+		;;
+esac
+#	Posunuti argumentu pro zachyceni zaznamu
+shift
+
+#	Osetreni pripadu, ze nejsou zadany zadne zaznamy
+if [ $# -eq 0 ]; then
+	echo "Too few arguments" 1>&2
+	exit $exit_failure
+fi
+
+#echo "Username: $username Command: $command"
+#################################################
+#				Jadro skriptu
+#################################################
+#	Zpracovani prilozenych zaznamu/souboru filtrem
+content="" #obsah zpracovavaneho souboru
+processed_logs=""	#Zaznamy zpracovane danym filtrem (-a,-b,-c)
+
+for log in "$@"; do
+
+	if [ ! -f "$log" ]; then
+		echo "Invalid log: '$log'" 1>&2
+		exit $exit_failure
+	fi
+
+	case "$log" in
+		#Komprimovany zaznam
+		*.log.gz)
+			content=$(gunzip -ck "$log")
+			;;
+		#Normalni zaznam	
+		*)
+			content=$(cat "$log")
+			;;	
+	esac
+		processed_logs="$processed_logs$(filter "$content")"'\n'
+done
+
+#	Provedeni prikazu (implicitne list) na zpracovanych zaznamech
+case $command in
+	"list" )
+		list "$processed_logs"
+		;;
+	"list-currency" )
+		listcurrency "$processed_logs"
+		;;
+	"status" )
+		status "$processed_logs"
+		;;
+	"profit" )
+		profit "$processed_logs"
+		;;		
+esac
+
+#Uspesne ukonceni skriptu
+exit $exit_sucess
