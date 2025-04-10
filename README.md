@@ -37,25 +37,30 @@ This repository serves as an archive of completed school projects.
 ### ISS - Signals and Systems
 - Car engine signal analysis - 17/18 tbd
 
-### IDS
+### IPK - Computer Communications and Networks
 -tbd
 
-### IPK
+### IPP - Principles of Programming Languages
 -tbd
 
-### IPP
+### IAN - Binary Code Analysis
 -tbd
 
-### IZU
+### ICP - The C++ Programming Language
 -tbd
 
-### IAN
--tbd
-
-### ICP
--tbd
-
-### ITS
+### ITS - Testing and Dynamic Analysis
 -tbd
 
 ## 2025/2026
+
+### IIS - Information Systems
+-tbd
+
+### IMP - Microprocessors and Embedded Systems
+-tbd
+### IMS - Modelling and Simulation
+-tbd
+
+### ISA - Network Applications and Network Administration
+-tbd
