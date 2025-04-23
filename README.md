@@ -38,13 +38,16 @@ This repository serves as an archive of completed school projects.
 - Car engine signal analysis - 17/18 tbd
 
 ### IPK - Computer Communications and Networks
--tbd
+- L4 Port Scanner (Project 1) - 10/10
+- Chat client (Project 2) - tbd
 
 ### IPP - Principles of Programming Languages
--tbd
+- Object Oriented Language SOL25 Parser (Project 1) - 6.3/7
+- Object Oriented Language SOL25 Interpreter (Project 2) - tbd
 
 ### IAN - Binary Code Analysis
--tbd
+- ELF (Project 1)
+- Kernel Panic Crash Analysis (Project 2)
 
 ### ICP - The C++ Programming Language
 -tbd
@@ -59,6 +62,7 @@ This repository serves as an archive of completed school projects.
 
 ### IMP - Microprocessors and Embedded Systems
 -tbd
+
 ### IMS - Modelling and Simulation
 -tbd
 
