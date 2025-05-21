@@ -39,21 +39,22 @@ This repository serves as an archive of completed school projects.
 
 ### IPK - Computer Communications and Networks
 - L4 Port Scanner (Project 1) - 10/10
-- Chat client (Project 2) - tbd
+- Chat client (Project 2) - 27.97/30
 
 ### IPP - Principles of Programming Languages
 - Object Oriented Language SOL25 Parser (Project 1) - 6.3/7
-- Object Oriented Language SOL25 Interpreter (Project 2) - tbd
+- Object Oriented Language SOL25 Interpreter (Project 2) - 13/13 + 1.9 bonus
 
 ### IAN - Binary Code Analysis
-- ELF (Project 1)
-- Kernel Panic Crash Analysis (Project 2)
+- ELF (Project 1) - 13/15
+- Kernel Panic Crash Analysis (Project 2) - 15/15
 
 ### ICP - The C++ Programming Language
 -tbd
 
 ### ITS - Testing and Dynamic Analysis
--tbd
+- Test scenarios (Project 1) - 19/20
+- Test set (Project 2) - 17.1/20
 
 ## 2025/2026
 
