@@ -1,6 +1,7 @@
 ## Collection of BUT FIT projects / Soubor projektů VUT FIT
 
 This repository serves as an archive of completed school projects.
+
 Tento repozitář slouží jako archiv vypracovaných školních projektů.
 
 ## 2023/2024
