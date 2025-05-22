@@ -15,6 +15,7 @@ This repository serves as an archive of completed school projects.
 
 ### IZP - Introduction to Programming Systems
 - Text Filtering (Project 1) - 10/10 + 1.5 bonus
+- Maze Solver (Project 2) - 14/14
 
 ### IZLO - Introduction to Logic for Computer Science
 - SAT solving (Project 1) - 10/10
@@ -53,8 +54,8 @@ This repository serves as an archive of completed school projects.
 -tbd
 
 ### ITS - Testing and Dynamic Analysis
-- Test scenarios (Project 1) - 19/20
-- Test set (Project 2) - 17.1/20
+- Test Scenarios (Project 1) - 19/20
+- Test Set (Project 2) - 17.1/20
 
 ## 2025/2026
 
