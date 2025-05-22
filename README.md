@@ -5,22 +5,25 @@ This repository serves as an archive of completed school projects.
 Tento repozitář slouží jako archiv vypracovaných školních projektů.
 
 ## 2023/2024
-### IOS - Operating Systems
-- Shell script (Project 1) - 13/15
-- [Processes and Semaphores (Project 2)](https://github.com/0x6B6/IOS-2024-project-2) - 15/15
-
-### IZG - Computer Graphics Principles
-- GPU Pipeline Simulation - 17.36/20
-
-### INC - Digital Systems Design
-- VHDL UART - 15/15
+### IEL - Electronics for Information Technology
+- Electric Circuit Analysis (Project 1) - 11/12
 
 ### IZP - Introduction to Programming Systems
 - Text Filtering (Project 1) - 10/10 + 1.5 bonus
 - Maze Solver (Project 2) - 14/14
 
+### INC - Digital Systems Design
+- VHDL UART - 15/15
+
+### IOS - Operating Systems
+- Shell Script (Project 1) - 13/15
+- [Processes and Semaphores (Project 2)](https://github.com/0x6B6/IOS-2024-project-2) - 15/15
+
+### IZG - Computer Graphics Principles
+- GPU Pipeline Simulation - 17.36/20
+
 ### IZLO - Introduction to Logic for Computer Science
-- SAT solving (Project 1) - 10/10
+- SAT Solving (Project 1) - 10/10
 
 ## 2024/2025
 ### IAL - Algorithms
@@ -38,11 +41,11 @@ Tento repozitář slouží jako archiv vypracovaných školních projektů.
 - React + Django application - 51/55 tbd
 
 ### ISS - Signals and Systems
-- Car engine signal analysis - 17/18 tbd
+- Car Engine Signal Analysis - 17/18 tbd
 
 ### IPK - Computer Communications and Networks
 - L4 Port Scanner (Project 1) - 10/10
-- Chat client (Project 2) - 27.97/30
+- Chat Client (Project 2) - 27.97/30
 
 ### IPP - Principles of Programming Languages
 - Object Oriented Language SOL25 Parser (Project 1) - 6.3/7
